@@ -10,15 +10,15 @@ import lombok.*;
 @AllArgsConstructor
 public class HitRequestDto {
 
-    @Min(-5)
-    @Max(3)
-    private Double x;
+    @Min(value = -5, message = "X должен быть не меньше -5")
+    @Max(value = 3, message = "X должен быть не больше 3")
+    private Integer x;
 
-    @Min(-3)
-    @Max(5)
+    @Min(value = -3, message = "Y должен быть не меньше -3")
+    @Max(value = 5, message = "Y должен быть не больше 5")
     private Double y;
 
-    @Min(1)
-    @Max(5)
-    private Double r;
+    @Min(value = -5, message = "R должен быть не меньше -5")
+    @Max(value = 3, message = "R должен быть не больше 3")
+    private Integer r;
 }

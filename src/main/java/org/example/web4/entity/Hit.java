@@ -12,22 +12,22 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HitEntity {
+public class Hit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double x;
-    private double y;
-    private double r;
+    private int x; // {-5, -4, -3, -2, -1, 0, 1, 2, 3}
+    private double y; // {-3 ... 5} - text
+    private int r; // {-5, -4, -3, -2, -1, 0, 1, 2, 3}
 
     private boolean hit;
 
-    private LocalDateTime timestamp;
+    private LocalDateTime createdAt;
 
     private long executionTimeNs;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private User user;
 }

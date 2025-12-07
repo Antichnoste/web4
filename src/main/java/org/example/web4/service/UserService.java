@@ -1,9 +1,11 @@
 package org.example.web4.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.web4.dto.AuthRequest;
 import org.example.web4.dto.AuthResponse;
-import org.example.web4.entity.UserEntity;
+import org.example.web4.entity.User;
+import org.example.web4.exception.InvalidCredentialsException;
 import org.example.web4.exception.UserAlreadyExistsException;
 import org.example.web4.exception.UserNotFoundException;
 import org.example.web4.repository.UserRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService{
@@ -22,31 +25,41 @@ public class UserService{
     private final JwtUtil jwtUtil;
 
     public AuthResponse register(AuthRequest request) {
+
+        log.info("Начинаю регистрацию пользователя {}", request.getUsername());
+
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException("Пользователь с такими данными уже существует");
         }
 
-        UserEntity u = UserEntity.builder()
+        User user = User.builder()
                 .username(request.getUsername())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        userRepository.save(u);
-        String token = jwtUtil.generateToken(u.getUsername());
+        userRepository.save(user);
+        String token = jwtUtil.generateToken(user.getUsername());
+
+        log.info("Пользователь {} успешно зарегистрирован", user.getUsername());
         return new AuthResponse(token);
     }
 
     public AuthResponse login(AuthRequest request) {
-        UserEntity u = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
-        if (!passwordEncoder.matches(request.getPassword(), u.getPasswordHash())) {
-            throw new IllegalArgumentException("Invalid credentials");
+
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с таким логином не найден")
+        );
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Неверный логин или пароль");
         }
-        return new AuthResponse(jwtUtil.generateToken(u.getUsername()));
+
+        String token = jwtUtil.generateToken(user.getUsername());
+        return new AuthResponse(token);
     }
 
-    public UserEntity findByUsername(String username) {
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь по такому имени не найден"));
     }
