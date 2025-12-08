@@ -1,6 +1,7 @@
 package org.example.web4.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.web4.dto.HitRequestDto;
 import org.example.web4.dto.HitResponseDto;
 import org.example.web4.entity.Hit;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HitService {
@@ -53,6 +55,8 @@ public class HitService {
 
      private boolean isHit(double x, double y, double r) {
 
+        log.info("Пришла точка {},{},{}", x,y,r);
+
         double r_2 = r / 2.0;
 
         // I четверть (треугольник)
@@ -64,7 +68,7 @@ public class HitService {
          }
 
          // II четверть (квадрат)
-         if (0 <=y && y <= r && -1.0 * r <= x && x <= 0){
+         if (0 <= y && y <= r && -1.0 * r <= x && x <= 0){
              return true;
          }
 

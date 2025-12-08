@@ -17,7 +17,7 @@ public class Hit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int x; // {-5, -4, -3, -2, -1, 0, 1, 2, 3}
+    private double x; // {-5, -4, -3, -2, -1, 0, 1, 2, 3}
     private double y; // {-3 ... 5} - text
     private int r; // {-5, -4, -3, -2, -1, 0, 1, 2, 3}
 

@@ -12,7 +12,7 @@ public class HitRequestDto {
 
     @Min(value = -5, message = "X должен быть не меньше -5")
     @Max(value = 3, message = "X должен быть не больше 3")
-    private Integer x;
+    private Double x;
 
     @Min(value = -3, message = "Y должен быть не меньше -3")
     @Max(value = 5, message = "Y должен быть не больше 5")

@@ -14,6 +14,6 @@ public class HitResponseDto {
     private Double y;
     private Double r;
     private Boolean hit;
-    private LocalDateTime timestamp;
+    private LocalDateTime createdAt;
     private Long executionTimeNs;
 }
