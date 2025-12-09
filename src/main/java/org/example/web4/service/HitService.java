@@ -57,6 +57,14 @@ public class HitService {
 
         log.info("Пришла точка {},{},{}", x,y,r);
 
+        if (r == 0){
+            return false;
+        }
+
+        if (r < 0){
+            return isHit(-x, -y, -r);
+        }
+
         double r_2 = r / 2.0;
 
         // I четверть (треугольник)

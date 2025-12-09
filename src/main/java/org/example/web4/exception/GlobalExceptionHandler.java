@@ -16,7 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -143,6 +143,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleJpaException(InvalidDataAccessApiUsageException ex) {
         log.error("Ошибка JPA: {}", ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, "Ошибка обработки данных");
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(NoResourceFoundException ex) {
+        String missingPath = ex.getResourcePath();
+        String method = ex.getHttpMethod().name();
+
+        log.warn("Статический ресурс не найден: [{}] /{}", method, missingPath);
+
+        return build(HttpStatus.NOT_FOUND, "Ресурс не найден: " + missingPath);
     }
 
     @ExceptionHandler(Exception.class)

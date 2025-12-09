@@ -4,9 +4,8 @@ import { useSelector } from 'react-redux';
 import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
 import Header from './components/Header';
-import './index.css'; // Глобальные стили (можно просто import './index.css')
+import './index.css';
 
-// Компонент для защиты приватных маршрутов
 const PrivateRoute = ({ children }) => {
   const token = useSelector((state) => state.auth.token);
   return token ? children : <Navigate to="/login" />;
@@ -20,15 +19,14 @@ function App() {
         <main className="app-content">
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            <Route 
-              path="/main" 
+            <Route
+              path="/main"
               element={
                 <PrivateRoute>
                   <MainPage />
                 </PrivateRoute>
-              } 
+              }
             />
-            {/* Редирект по умолчанию */}
             <Route path="*" element={<Navigate to="/main" />} />
           </Routes>
         </main>

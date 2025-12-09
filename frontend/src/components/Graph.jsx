@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { drawGraph } from '../utils/drawGraph';
+import { drawGraph, MAX_VALUE } from '../utils/drawGraph';
 
 const Graph = ({ r, points, onGraphClick }) => {
   const canvasRef = useRef(null);
@@ -10,25 +10,18 @@ const Graph = ({ r, points, onGraphClick }) => {
   }, [r, points]);
 
   const handleClick = (e) => {
-    if (r <= 0) {
-      alert("Выберите R перед кликом по графику!");
-      return;
-    }
-
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const width = canvas.width;
-    const height = canvas.height;
+
+    const padding = 20;
+    const pixelsPerUnit = (width / 2 - padding) / MAX_VALUE;
+
+    const centerX = width / 2;
+    const centerY = canvas.height / 2;
 
     const xClick = e.clientX - rect.left;
     const yClick = e.clientY - rect.top;
-
-    // Логика пересчета масштабируется автоматически, т.к. зависит от width/height
-    const scaleR = r;
-    const padding = 20;
-    const pixelsPerUnit = (width / 2 - padding) / (scaleR * 1.5);
-    const centerX = width / 2;
-    const centerY = height / 2;
 
     const xGraph = (xClick - centerX) / pixelsPerUnit;
     const yGraph = (centerY - yClick) / pixelsPerUnit;
@@ -37,11 +30,11 @@ const Graph = ({ r, points, onGraphClick }) => {
   };
 
   return (
-      <div className="graph-container">
+      <div className="graph-container"  >
         <canvas
             ref={canvasRef}
-            width={500}  /* Увеличили размер */
-            height={500} /* Увеличили размер */
+            width={500}
+            height={500}
             onClick={handleClick}
             className="graph-canvas"
         />

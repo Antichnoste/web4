@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class PageController {
 
-    @RequestMapping({"/", "/main"})
+    @RequestMapping({"/", "/main", "/login"})
     public String start(){
-        return "index.html";
+        return "forward:index.html";
     }
 }

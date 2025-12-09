@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// Замените URL на адрес вашего бэкенда
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:8080';
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -10,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Интерцептор для добавления токена к каждому запросу
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('jwt_token');
@@ -22,13 +20,16 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Интерцептор для обработки ошибок (например, протухший токен)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('jwt_token');
-      window.location.href = '/login';
+        const requestUrl = error.config.url || '';
+
+        if (!requestUrl.includes('/api/auth/login') && !requestUrl.includes('/api/auth/register')) {
+            localStorage.removeItem('jwt_token');
+            window.location.href = '/login';
+        }
     }
     return Promise.reject(error);
   }

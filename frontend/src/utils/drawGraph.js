@@ -1,107 +1,164 @@
+const COLORS = {
+    bg: 'white',
+    axis: 'black',
+    text: 'black',
+    shape: '#3b82f6',
+    pointHit: '#22c55e',
+    pointMiss: '#ef4444',
+    pointBorder: '#333'
+};
+
+export const MAX_VALUE = 6;
+
+const drawBackground = (ctx, width, height) => {
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = COLORS.bg;
+    ctx.fillRect(0, 0, width, height);
+};
+
+const drawAxes = (ctx, width, height, padding, centerX, centerY) => {
+    ctx.strokeStyle = COLORS.axis;
+    ctx.lineWidth = 2;
+
+
+    ctx.beginPath();
+    ctx.moveTo(padding, centerY);
+    ctx.lineTo(width - padding, centerY);
+    ctx.stroke();
+
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, height - padding);
+    ctx.lineTo(centerX, padding);
+    ctx.stroke();
+
+    ctx.fillStyle = COLORS.text;
+    ctx.font = '14px Arial';
+    ctx.fillText('X', width - padding + 5, centerY + 5);
+    ctx.fillText('Y', centerX + 5, padding - 5);
+};
+
+const drawShapes = (ctx, r, scale, centerX, centerY) => {
+    if (r === 0) return;
+
+    ctx.fillStyle = COLORS.shape;
+
+    const absR = Math.abs(r);
+    if (r > 0) {
+        ctx.fillRect(centerX - r * scale, centerY - r * scale, r * scale, r * scale);
+    } else {
+        ctx.fillRect(centerX, centerY, absR * scale, absR * scale);
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    if (r > 0) {
+        ctx.lineTo(centerX + (r / 2) * scale, centerY);
+        ctx.lineTo(centerX, centerY - (r / 2) * scale);
+    } else {
+        ctx.lineTo(centerX - (absR / 2) * scale, centerY);
+        ctx.lineTo(centerX, centerY + (absR / 2) * scale);
+    }
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    if (r > 0) {
+        ctx.arc(centerX, centerY, (r / 2) * scale, 0.5 * Math.PI, Math.PI);
+    } else {
+        ctx.arc(centerX, centerY, (absR / 2) * scale, 1.5 * Math.PI, 2 * Math.PI);
+    }
+    ctx.fill();
+};
+
+const drawLabels = (ctx, r, scale, centerX, centerY) => {
+    ctx.fillStyle = COLORS.text;
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    ctx.fillText('0', centerX - 12, centerY + 12);
+
+    for (let i = 1; i < MAX_VALUE; i++) {
+        // --- Ось X ---
+
+        // Положительная (Справа)
+        const xPos = centerX + i * scale;
+        ctx.beginPath(); ctx.moveTo(xPos, centerY - 3); ctx.lineTo(xPos, centerY + 3); ctx.stroke();
+        ctx.fillText(i.toString(), xPos, centerY + 15);
+
+        // Отрицательная (Слева)
+        const xNeg = centerX - i * scale;
+        ctx.beginPath(); ctx.moveTo(xNeg, centerY - 3); ctx.lineTo(xNeg, centerY + 3); ctx.stroke();
+        ctx.fillText("-" + i, xNeg, centerY + 15);
+
+        // --- Ось Y ---
+
+        // Положительная (Сверху) - помним, что в Canvas Y идет вниз
+        const yPosUp = centerY - i * scale;
+        ctx.beginPath(); ctx.moveTo(centerX - 3, yPosUp); ctx.lineTo(centerX + 3, yPosUp); ctx.stroke();
+        ctx.fillText(i.toString(), centerX - 15, yPosUp);
+
+        // Отрицательная (Снизу)
+        const yPosDown = centerY + i * scale;
+        ctx.beginPath(); ctx.moveTo(centerX - 3, yPosDown); ctx.lineTo(centerX + 3, yPosDown); ctx.stroke();
+        ctx.fillText("-" + i, centerX - 15, yPosDown);
+    }
+};
+
+const drawPoints = (ctx, points, scale, centerX, centerY, currentR) => {
+    if (currentR === 0){
+        return;
+    }
+
+    points.forEach(point => {
+        let xVal = point.x;
+        let yVal = point.y;
+
+        // ЛОГИКА МАСШТАБИРОВАНИЯ ТОЧЕК
+        // 1. Если currentR != 0 и point.r != 0: Масштабируем
+        // 2. Если currentR == 0: Рисуем точку как есть (без зума)
+        // 3. Если point.r == 0: Рисуем как есть (защита от деления на 0)
+
+        if (currentR !== 0 && point.r !== 0) {
+            // Эта формула работает и для отрицательных чисел!
+            // Пример: точка была (2,2) при R=2.
+            // Ставим R=-2. Factor = -1. Точка становится (-2, -2).
+            // Она визуально перемещается в 3-ю четверть, следуя за инверсией фигуры.
+            const factor = currentR / point.r;
+            xVal = point.x * factor;
+            yVal = point.y * factor;
+        }
+
+        const x = centerX + xVal * scale;
+        const y = centerY - yVal * scale;
+
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = point.hit ? COLORS.pointHit : COLORS.pointMiss;
+        ctx.fill();
+        ctx.strokeStyle = COLORS.pointBorder;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+};
+
 export const drawGraph = (canvas, r, points) => {
     if (!canvas) return;
+
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
 
-    // Очистка и белый фон
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, width, height);
-
     const padding = 20;
-    const xAxisY = height / 2;
-    const yAxisX = width / 2;
-    const scaleR = r > 0 ? r : 5;
-    const pixelsPerUnit = (width / 2 - padding) / (scaleR * 1.5);
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-    // --- Фигуры (синие) ---
-    ctx.fillStyle = '#3b82f6'; // Стандартный синий
+    const pixelsPerUnit = (width / 2 - padding) / MAX_VALUE;
 
-    if (r > 0) {
-        // Прямоугольник (2-я четверть)
-        ctx.fillRect(
-            yAxisX - r * pixelsPerUnit,
-            xAxisY - r * pixelsPerUnit,
-            r * pixelsPerUnit,
-            r * pixelsPerUnit
-        );
-
-        // Треугольник (1-я четверть)
-        ctx.beginPath();
-        ctx.moveTo(yAxisX, xAxisY);
-        ctx.lineTo(yAxisX + (r / 2) * pixelsPerUnit, xAxisY);
-        ctx.lineTo(yAxisX, xAxisY - (r / 2) * pixelsPerUnit);
-        ctx.fill();
-
-        // Сектор (3-я четверть)
-        ctx.beginPath();
-        ctx.moveTo(yAxisX, xAxisY);
-        ctx.arc(yAxisX, xAxisY, (r / 2) * pixelsPerUnit, 0.5 * Math.PI, Math.PI);
-        ctx.fill();
-    }
-
-    // --- Оси (черные) ---
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-
-    // Ось X
-    ctx.beginPath();
-    ctx.moveTo(padding, xAxisY);
-    ctx.lineTo(width - padding, xAxisY);
-    ctx.stroke();
-
-    // Ось Y
-    ctx.beginPath();
-    ctx.moveTo(yAxisX, height - padding);
-    ctx.lineTo(yAxisX, padding);
-    ctx.stroke();
-
-    // Текст
-    ctx.fillStyle = 'black';
-    ctx.font = '14px Arial';
-    ctx.fillText('X', width - padding + 5, xAxisY + 5);
-    ctx.fillText('Y', yAxisX + 5, padding - 5);
-
-    // --- Метки ---
-    if (r > 0) {
-        const labels = [
-            { val: r, label: 'R' },
-            { val: r / 2, label: 'R/2' },
-            { val: -r / 2, label: '-R/2' },
-            { val: -r, label: '-R' }
-        ];
-
-        labels.forEach(mark => {
-            const x = yAxisX + mark.val * pixelsPerUnit;
-            ctx.beginPath();
-            ctx.moveTo(x, xAxisY - 5);
-            ctx.lineTo(x, xAxisY + 5);
-            ctx.stroke();
-            ctx.fillText(mark.label, x - 10, xAxisY + 20);
-
-            const y = xAxisY - mark.val * pixelsPerUnit;
-            ctx.beginPath();
-            ctx.moveTo(yAxisX - 5, y);
-            ctx.lineTo(yAxisX + 5, y);
-            ctx.stroke();
-            ctx.fillText(mark.label, yAxisX + 10, y + 5);
-        });
-    }
-
-    // --- Точки ---
-    points.forEach(point => {
-        const x = yAxisX + point.x * pixelsPerUnit;
-        const y = xAxisY - point.y * pixelsPerUnit;
-
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, 2 * Math.PI);
-
-        ctx.fillStyle = point.hit ? '#22c55e' : '#ef4444';
-        ctx.fill();
-
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    });
+    drawBackground(ctx, width, height);
+    drawShapes(ctx, r, pixelsPerUnit, centerX, centerY);
+    drawAxes(ctx, width, height, padding, centerX, centerY);
+    drawLabels(ctx, r, pixelsPerUnit, centerX, centerY);
+    drawPoints(ctx, points, pixelsPerUnit, centerX, centerY, r);
 };

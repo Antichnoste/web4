@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/authSlice';
 import { useNavigate } from 'react-router-dom';
-import './Components.css'; // Общий CSS для компонентов
+import './Components.css';
 
 const Header = () => {
   const { token } = useSelector((state) => state.auth);

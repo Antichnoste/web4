@@ -41,15 +41,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                //Эндпоинты для регистрации и авторизации
-                                "/auth/**",
-                                //Мои пути для Swagger
-                                "/docs/**",
-                                "/api-docs/**",
-                                //Надо разрешить дефолтные пути для Swagger
-                                "/swagger-ui/**"
-                                ).permitAll()
-                        .anyRequest().authenticated()
+                                "/api/hits/**"
+                        ).authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -66,7 +60,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:3000",
-                "http://127.0.0.1:3000",
+                "http://127.0.0.1:3001",
                 "http://localhost:5173", // Этот IP нужен если я буду писать фронт через Vite
                 "http://localhost:8080"
         ));

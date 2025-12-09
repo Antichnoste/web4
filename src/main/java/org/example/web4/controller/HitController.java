@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/hits")
+@RequestMapping("api/hits")
 @RequiredArgsConstructor
 @Tag(name = "Hits", description = "Работа с точками")
 public class HitController {
