@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux'; 
 import { fetchPoints, addPoint, clearPoints, clearPointsError } from '../store/pointsSlice';
 import Graph from '../components/Graph';
 import ResultsTable from '../components/ResultsTable';

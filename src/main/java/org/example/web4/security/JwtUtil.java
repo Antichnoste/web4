@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.function.Function;
 
 @Slf4j
 @Component
@@ -35,16 +34,16 @@ public class JwtUtil {
                 .compact();
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> resolver) {
-        return resolver.apply(parseClaims(token));
-    }
-
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        Claims claims = parseClaims(token);
+
+        return claims.getSubject();
     }
 
     public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+        Claims claims = parseClaims(token);
+
+        return claims.getExpiration();
     }
 
     public boolean isTokenExpired(String token) {
@@ -83,11 +82,6 @@ public class JwtUtil {
         } catch (MalformedJwtException e) {
             log.warn("Malformed JWT: {}", e.getMessage());
             throw new JwtException("Invalid token format", e);
-
-        } catch (SignatureException e) {
-            log.warn("Invalid JWT signature: {}", e.getMessage());
-            throw new JwtException("Invalid signature", e);
-
         } catch (IllegalArgumentException e) {
             log.warn("Empty JWT token: {}", e.getMessage());
             throw new JwtException("Empty token", e);

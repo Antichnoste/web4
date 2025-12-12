@@ -80,26 +80,18 @@ const drawLabels = (ctx, r, scale, centerX, centerY) => {
     ctx.fillText('0', centerX - 12, centerY + 12);
 
     for (let i = 1; i < MAX_VALUE; i++) {
-        // --- Ось X ---
-
-        // Положительная (Справа)
         const xPos = centerX + i * scale;
         ctx.beginPath(); ctx.moveTo(xPos, centerY - 3); ctx.lineTo(xPos, centerY + 3); ctx.stroke();
         ctx.fillText(i.toString(), xPos, centerY + 15);
 
-        // Отрицательная (Слева)
         const xNeg = centerX - i * scale;
         ctx.beginPath(); ctx.moveTo(xNeg, centerY - 3); ctx.lineTo(xNeg, centerY + 3); ctx.stroke();
         ctx.fillText("-" + i, xNeg, centerY + 15);
 
-        // --- Ось Y ---
-
-        // Положительная (Сверху) - помним, что в Canvas Y идет вниз
         const yPosUp = centerY - i * scale;
         ctx.beginPath(); ctx.moveTo(centerX - 3, yPosUp); ctx.lineTo(centerX + 3, yPosUp); ctx.stroke();
         ctx.fillText(i.toString(), centerX - 15, yPosUp);
 
-        // Отрицательная (Снизу)
         const yPosDown = centerY + i * scale;
         ctx.beginPath(); ctx.moveTo(centerX - 3, yPosDown); ctx.lineTo(centerX + 3, yPosDown); ctx.stroke();
         ctx.fillText("-" + i, centerX - 15, yPosDown);
@@ -115,16 +107,7 @@ const drawPoints = (ctx, points, scale, centerX, centerY, currentR) => {
         let xVal = point.x;
         let yVal = point.y;
 
-        // ЛОГИКА МАСШТАБИРОВАНИЯ ТОЧЕК
-        // 1. Если currentR != 0 и point.r != 0: Масштабируем
-        // 2. Если currentR == 0: Рисуем точку как есть (без зума)
-        // 3. Если point.r == 0: Рисуем как есть (защита от деления на 0)
-
         if (currentR !== 0 && point.r !== 0) {
-            // Эта формула работает и для отрицательных чисел!
-            // Пример: точка была (2,2) при R=2.
-            // Ставим R=-2. Factor = -1. Точка становится (-2, -2).
-            // Она визуально перемещается в 3-ю четверть, следуя за инверсией фигуры.
             const factor = currentR / point.r;
             xVal = point.x * factor;
             yVal = point.y * factor;

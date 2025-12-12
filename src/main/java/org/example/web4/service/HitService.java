@@ -38,13 +38,14 @@ public class HitService {
                 .user(user)
                 .build();
 
-        hitRepository.save(e);
+        hitRepository.save(e); // тут @Transactional не нужно так как по умолчанию базовые методы,
+                               // такие как save(), deleteById(), findAll(), уже имеют транзакцию внутри
         return hitMapper.toDto(e);
     }
 
     public List<HitResponseDto> getHits(User user) {
         return hitRepository.findByUserOrderByCreatedAtDesc(user).stream()
-                .map(hitMapper::toDto)
+                .map(hit -> hitMapper.toDto(hit))
                 .collect(Collectors.toList());
     }
 

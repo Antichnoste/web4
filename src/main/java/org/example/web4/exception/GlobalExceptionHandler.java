@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -71,20 +73,28 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
 
-        String message = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
+        List<FieldError> errors = ex.getBindingResult().getFieldErrors();
+
+        String responseMessage = errors.stream()
                 .map(err -> String.format(
-                        "[%s: %s] — отклонено значение '%s'",
-                        err.getField(),
+                        "%s — отклонено значение '%s'",
                         err.getDefaultMessage(),
                         err.getRejectedValue()
                 ))
-                .collect(Collectors.joining("; "));
+                .collect(Collectors.joining("\n"));
 
-        log.warn("Ошибка валидации: {}", message);
+        String logMessage = errors.stream()
+                .map(err -> String.format(
+                        "{Field='%s', Value='%s', Msg='%s'}",
+                        err.getField(),
+                        err.getRejectedValue(),
+                        err.getDefaultMessage()
+                ))
+                .collect(Collectors.joining(", "));
 
-        return build(HttpStatus.BAD_REQUEST, message);
+        log.warn("Ошибка валидации (всего {}): [{}]", errors.size(), logMessage);
+
+        return build(HttpStatus.BAD_REQUEST, responseMessage);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -106,7 +116,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-        public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
         log.warn("Неверные учетные данные");
         return build(HttpStatus.UNAUTHORIZED, "Неверный логин или пароль");
     }

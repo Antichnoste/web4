@@ -1,4 +1,3 @@
-/* --- СТРАНИЦА ЛОГИНА (Вертикальная форма) --- */
 .login-page {
   display: flex;
   justify-content: center;
@@ -20,7 +19,6 @@
   color: #333;
 }
 
-/* Стили полей ввода внутри карточки */
 .login-card .form-group {
   display: block;
   margin-bottom: 15px;
@@ -38,22 +36,19 @@
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* Важно, чтобы padding не ломал ширину */
+  box-sizing: border-box;
 }
 
-/* === ИЗМЕНЕНИЯ ДЛЯ КНОПКИ === */
 .login-card .btn-submit {
-  display: block;      /* Делаем блочным элементом */
-  width: 75%;         /* Растягиваем на всю ширину (или поставьте 50%, если хотите маленькую) */
-  margin-top: 20px;    /* Отступ сверху */
+  display: block;
+  width: 75%;
+  margin-top: 20px;
   margin-bottom: 0;
   font-size: 1rem;
-  text-align: center;  /* Текст по центру */
+  text-align: center;
 }
 
-/* Если хотите маленькую кнопку по центру, раскомментируйте это: */
 .login-card .btn-submit {
-  /*width: 60%;*/
   margin: 20px auto 0 auto;
 }
 
@@ -61,14 +56,12 @@
   margin-top: 15px;
   color: #3498db;
   cursor: pointer;
-  text-align: center; /* Ссылка переключения тоже по центру */
-  display: block;     /* Гарантирует, что text-align сработает */
+  text-align: center;
+  display: block
 }
 .toggle-auth:hover {
   text-decoration: underline;
 }
-
-/* --- ГЛАВНАЯ СТРАНИЦА (Новая верстка) --- */
 
 .main-page-centered {
   display: flex;
@@ -89,30 +82,27 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* Контейнер всей формы */
 .coord-form-new {
   background: white;
   padding: 20px 40px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   width: 100%;
-  max-width: 900px; /* Ширина формы */
+  max-width: 900px;
   display: flex;
-  flex-direction: column; /* Элементы друг под другом (поля сверху, кнопки снизу) */
+  flex-direction: column;
   gap: 20px;
   box-sizing: border-box;
 }
 
-/* Ряд с полями ввода (X, Y, R) */
 .form-row {
   display: flex;
-  flex-wrap: wrap; /* Если экран маленький, переносить */
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 30px;
 }
 
-/* Отдельная группа (Label + Input) */
 .input-group {
   display: flex;
   align-items: center;
@@ -124,7 +114,6 @@
   font-size: 1.1rem;
 }
 
-/* Стили полей */
 .input-group select,
 .input-group .input-y {
   padding: 8px 12px;
@@ -135,14 +124,13 @@
   text-align: center;
 }
 
-/* Контейнер для радио-кнопок R */
 .radio-group-container {
   display: flex;
   gap: 15px;
   padding: 8px 20px;
   background: #f8f9fa;
   border: 1px solid #e9ecef;
-  border-radius: 50px; /* Овальная форма */
+  border-radius: 50px;
 }
 
 .radio-label {
@@ -158,17 +146,15 @@
   margin: 0;
 }
 
-/* Ряд с КНОПКАМИ (внизу) */
 .form-actions {
   display: flex;
   justify-content: center;
   gap: 20px;
   width: 100%;
   padding-top: 10px;
-  border-top: 1px solid #eee; /* Тонкая линия разделитель (по желанию) */
+  border-top: 1px solid #eee;
 }
 
-/* Кнопки делаем пошире */
 .btn-submit, .btn-clear {
   min-width: 120px;
 }
@@ -178,7 +164,24 @@
   font-weight: bold;
   text-align: center;
   background: #fadbd8;
-  padding: 8px;
+  padding: 8px 15px;
+  border-radius: 4px;
+
+  /*Убирает проблему с спецсимволами*/
+  white-space: pre-wrap;
+}
+
+.login-error-msg {
+  color: #c0392b;
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+
+  white-space: pre-wrap; /* Учитывает \n и переносит строки */
+
+  background: #fadbd8;
+  padding: 10px;
   border-radius: 4px;
 }
 
@@ -187,7 +190,6 @@
   overflow-x: auto;
 }
 
-/* Адаптивность для мобильных */
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;

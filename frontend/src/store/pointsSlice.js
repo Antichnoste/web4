@@ -47,7 +47,7 @@ const pointsSlice = createSlice({
           state.error = null;
         })
         .addCase(addPoint.fulfilled, (state, action) => {
-          state.items.unshift(action.payload);
+          state.items.unshift(action.payload); // добоавляем новую точку в начало массива
           state.error = null;
         })
         .addCase(addPoint.rejected, (state, action) => {

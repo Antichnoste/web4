@@ -30,7 +30,7 @@
 }
 
 .graph-canvas {
-  background: white; /* Белый фон */
+  background: white; 
   border: 1px solid #ccc;
   border-radius: 8px;
   cursor: crosshair;

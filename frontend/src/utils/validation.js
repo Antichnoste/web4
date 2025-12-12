@@ -28,20 +28,16 @@ export function validateY(yValue) {
 export function normalizeInput(value) {
   let rawValue = value.replace(',', '.');
 
-  // Если начинается с минуса, запоминаем
   const startsWithMinus = rawValue.trim().startsWith('-');
 
-  // Удаляем всё кроме цифр и точки
   let withoutInvalid = rawValue.replace(/[^0-9.]/g, '');
 
-  // Обработка точек: оставляем только первую
   const parts = withoutInvalid.split('.');
   let normalized = parts[0];
   if (parts.length > 1) {
     normalized += '.' + parts.slice(1).join('');
   }
 
-  // Возвращаем минус, если он был
   return (startsWithMinus ? '-' : '') + normalized;
 }
 

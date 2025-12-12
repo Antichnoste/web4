@@ -3,6 +3,7 @@ package org.example.web4.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.web4.dto.AuthRequest;
 import org.example.web4.dto.AuthResponse;
@@ -23,7 +24,7 @@ public class AuthController {
             security = @SecurityRequirement(name = "none")
     )
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody AuthRequest req) {
+    public ResponseEntity<AuthResponse> register(@RequestBody @Valid AuthRequest req) {
         return ResponseEntity.ok(userService.register(req));
     }
 
@@ -32,7 +33,7 @@ public class AuthController {
             security = @SecurityRequirement(name = "none")
     )
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest req) {
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest req) {
         return ResponseEntity.ok(userService.login(req));
     }
 }

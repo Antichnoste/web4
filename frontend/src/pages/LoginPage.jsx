@@ -58,7 +58,7 @@ const LoginPage = () => {
             </div>
 
             {error && (
-                <div style={{ color: '#c0392b', marginTop: '10px', textAlign: 'center', fontWeight: 'bold' }}>
+                <div className="login-error-msg">
                   {error}
                 </div>
             )}

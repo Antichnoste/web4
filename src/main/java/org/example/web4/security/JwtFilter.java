@@ -1,6 +1,5 @@
 package org.example.web4.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,9 +38,10 @@ public class JwtFilter extends OncePerRequestFilter {
                     User userDetails = new User(
                             username,
                             "",
-                            java.util.Collections.emptyList()
+                            java.util.Collections.emptyList() // это роли, я их не использую
                     );
 
+                    // Сущность Spring Security для аутентификации, это нужно так как Spring не знает про наш фильтр
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
